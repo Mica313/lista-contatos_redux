@@ -1,0 +1,44 @@
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import Contato from '../../modules/Contato'
+
+const ContatoSlice = createSlice({
+  name: 'contatos',
+  initialState: {
+    itens: [new Contato('EBAC', '11 90000000', 'ebac@gmail.com', 1)]
+  },
+  reducers: {
+    remover: (state, action: PayloadAction<number>) => {
+      state.itens = state.itens.filter(
+        (contato) => contato.id !== action.payload
+      )
+    },
+    editar: (state, action: PayloadAction<Contato>) => {
+      const IndexContato = state.itens.findIndex(
+        (t) => t.id === action.payload.id
+      )
+      if (IndexContato >= 0) {
+        state.itens[IndexContato] = action.payload
+      }
+    },
+    cadastrar: (state, action: PayloadAction<Omit<Contato, 'id'>>) => {
+      const contatoExiste = state.itens.find(
+        (contato) =>
+          contato.nome.toLocaleLowerCase() ===
+          action.payload.nome.toLocaleLowerCase()
+      )
+      if (contatoExiste) {
+        alert('ja existe um contato com este nome!')
+      } else {
+        const ultimoContato = state.itens[state.itens.length - 1]
+        const contatoNovo = {
+          ...action.payload,
+          id: ultimoContato ? ultimoContato.id + 1 : 1
+        }
+        state.itens.push(contatoNovo)
+      }
+    }
+  }
+})
+
+export const { remover, editar, cadastrar } = ContatoSlice.actions
+export default ContatoSlice.reducer
